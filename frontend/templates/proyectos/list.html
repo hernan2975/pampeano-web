@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div x-data="{ showModal: false, nuevoProyecto: { nombre: '', tipo: 'huerta', estado: 'planificacion', organizacion_id: '' } }">
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2>📚 Proyectos Comunitarios</h2>
+            <button @click="showModal = true" class="btn">+ Nuevo Proyecto</button>
+        </div>
+        
+        {% if proyectos %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>Organización</th>
+                        <th>Participantes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for proyecto in proyectos %}
+                    <tr>
+                        <td><a href="/proyectos/{{ proyecto.id }}">{{ proyecto.nombre }}</a></td>
+                        <td><span class="badge {{ proyecto.tipo }}">{{ proyecto.tipo }}</span></td>
+                        <td><span class="badge {{ proyecto.estado }}">{{ proyecto.estado }}</span></td>
+                        <td>{{ proyecto.organizacion_nombre }}</td>
+                        <td>{{ proyecto.participantes_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>No hay proyectos registrados. <button @click="showModal = true" class="btn" style="display: inline; margin-left: 0.5rem;">Crear primero</button></p>
+        {% endif %}
+    </div>
+
+    <!-- Modal para nuevo proyecto -->
+    <div x-show="showModal" class="modal" @click.away="showModal = false" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+        <div class="card" @click.stop style="max-width: 500px; width: 90%;">
+            <h3>Nuevo Proyecto</h3>
+            <form hx-post="/proyectos" hx-target="#proyectos-list" hx-swap="beforeend" @submit="showModal = false">
+                <div class="form-group">
+                    <label>Nombre:</label>
+                    <input type="text" name="nombre" x-model="nuevoProyecto.nombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Tipo:</label>
+                    <select name="tipo" x-model="nuevoProyecto.tipo">
+                        <option value="huerta">Huerta</option>
+                        <option value="taller">Taller</option>
+                        <option value="cultural">Cultural</option>
+                        <option value="obra_social">Obra Social</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estado:</label>
+                    <select name="estado" x-model="nuevoProyecto.estado">
+                        <option value="planificacion">Planificación</option>
+                        <option value="ejecucion">Ejecución</option>
+                        <option value="finalizado">Finalizado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Organización:</label>
+                    <select name="organizacion_id" x-model="nuevoProyecto.organizacion_id" required>
+                        <option value="">Seleccione...</option>
+                        {% for org in organizaciones %}
+                        <option value="{{ org.id }}">{{ org.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Descripción:</label>
+                    <textarea name="descripcion" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn">Crear</button>
+                    <button type="button" @click="showModal = false" class="btn" style="background:#6c757d;">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.5em;
+    border-radius: 3px;
+    font-size: 0.85em;
+    text-transform: uppercase;
+}
+
+.badge.huerta { background: #d4edda; color: #155724; }
+.badge.taller { background: #cce7ff; color: #004085; }
+.badge.cultural { background: #fff3cd; color: #856404; }
+.badge.obra_social { background: #f8d7da; color: #721c24; }
+.badge.planificacion { background: #e2e3e5; color: #495057; }
+.badge.ejecucion { background: #cce7ff; color: #004085; }
+.badge.finalizado { background: #d4edda; color: #155724; }
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+</style>
+{% endblock %}
