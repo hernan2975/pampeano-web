@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}{{ organizacion.nombre }} - Pampeano Web{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2>🏢 {{ organizacion.nombre }}</h2>
+        <a href="/organizaciones" class="btn" style="background:#6c757d;">← Volver</a>
+    </div>
+    
+    <div class="org-info">
+        <p><strong>Tipo:</strong> {{ organizacion.tipo | capitalize }}</p>
+        <p><strong>Localidad:</strong> {{ organizacion.localidad }}</p>
+        <p><strong>Proyectos:</strong> {{ organizacion.proyectos_count }}</p>
+        <p><strong>Creada:</strong> {{ organizacion.created_at.strftime('%d/%m/%Y') }}</p>
+    </div>
+    
+    <div class="section">
+        <h3>Proyectos</h3>
+        {% if proyectos %}
+        <ul class="project-list">
+            {% for proyecto in proyectos %}
+            <li>
+                <a href="/proyectos/{{ proyecto.id }}">
+                    {{ proyecto.nombre }}
+                </a>
+                <span class="project-type {{ proyecto.tipo }}">{{ proyecto.tipo }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No hay proyectos registrados.</p>
+        {% endif %}
+    </div>
+    
+    <div class="actions">
+        <a href="/organizaciones/{{ organizacion.slug }}/editar" class="btn">✏️ Editar</a>
+        <button class="btn" style="background:#dc3545;" 
+                data-confirm="¿Eliminar esta organización? Se perderán todos sus proyectos.">
+            🗑️ Eliminar
+        </button>
+    </div>
+</div>
+
+<style>
+.org-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.org-info p {
+    margin: 0.5rem 0;
+}
+
+.section {
+    margin: 1.5rem 0;
+}
+
+.project-list {
+    list-style: none;
+    padding: 0;
+}
+
+.project-list li {
+    padding: 0.75rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.project-type {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+.project-type.huerta { background: #d4edda; color: #155724; }
+.project-type.taller { background: #cce7ff; color: #004085; }
+.project-type.cultural { background: #fff3cd; color: #856404; }
+.project-type.obra_social { background: #f8d7da; color: #721c24; }
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+</style>
+{% endblock %}
