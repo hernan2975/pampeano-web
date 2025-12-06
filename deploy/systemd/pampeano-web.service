@@ -1,0 +1,21 @@
+[Unit]
+Description=Pampeano Web - Plataforma Comunitaria
+After=network.target
+
+[Service]
+Type=exec
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/pampeano-web
+Environment="PATH=/opt/pampeano-web/venv/bin"
+Environment="MONGODB_URL=mongodb://localhost:27017"
+Environment="MONGODB_DB=pampeano"
+ExecStart=/opt/pampeano-web/venv/bin/uvicorn backend.main:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=pampeano-web
+
+[Install]
+WantedBy=multi-user.target
