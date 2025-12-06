@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}Organizaciones - Pampeano Web{% endblock %}
+
+{% block content %}
+<div x-data="{ 
+    showModal: false, 
+    nuevaOrg: { nombre: '', tipo: 'cooperativa', localidad: '', descripcion: '' },
+    filtro: '',
+    tipoFiltro: ''
+}">
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2>🏢 Organizaciones Comunitarias</h2>
+            <button @click="showModal = true" class="btn">
+                + Nueva Organización
+            </button>
+        </div>
+        
+        <!-- Filtros -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
+                <input type="text" 
+                       placeholder="Buscar por nombre o localidad..." 
+                       x-model="filtro"
+                       class="form-control"
+                       style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div style="min-width: 150px;">
+                <select x-model="tipoFiltro" class="form-control" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                    <option value="">Todos los tipos</option>
+                    <option value="cooperativa">Cooperativas</option>
+                    <option value="centro_cultural">Centros Culturales</option>
+                    <option value="huerta">Huertas Colectivas</option>
+                    <option value="asamblea">Asambleas</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Lista de organizaciones -->
+        <div id="org-list">
+            {% if organizaciones %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Localidad</th>
+                            <th>Proyectos</th>
+                            <th>Creada</th>
+                            <th style="width: 120px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for org in organizaciones %}
+                        <tr x-show="(({{ org.nombre | tojson }} + ' ' + {{ org.localidad | tojson }}).toLowerCase().includes(filtro.toLowerCase())) && 
+                                   ('{{ org.tipo }}' === tipoFiltro || tipoFiltro === '')">
+                            <td>
+                                <a href="/organizaciones/{{ org.slug }}" 
+                                   style="text-decoration: none; color: #264653; font-weight: 500;">
+                                    {{ org.nombre }}
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge {{ org.tipo }}">{{ org.tipo | capitalize }}</span>
+                            </td>
+                            <td>{{ org.localidad }}</td>
+                            <td>
+                                {% if org.proyectos_count > 0 %}
+                                <span class="badge success">{{ org.proyectos_count }}</span>
+                                {% else %}
+                                <span class="badge secondary">0</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ org.created_at.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                <a href="/organizaciones/{{ org.slug }}/editar" 
+                                   class="btn-action" 
+                                   title="Editar">
+                                    ✏️
+                                </a>
+                                <button class="btn-action" 
+                                        title="Eliminar"
+                                        data-confirm="¿Eliminar '{{ org.nombre }}'? Se perderán todos sus proyectos."
+                                        hx-delete="/organizaciones/{{ org.id }}"
+                                        hx-target="#org-list"
+                                        hx-confirm="¿Eliminar '{{ org.nombre }}'? Se perderán todos sus proyectos.">
+                                    🗑️
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 6px;">
+                <p><strong>{{ organizaciones | length }}</strong> organizaciones registradas</p>
+            </div>
+            
+            {% else %}
+            <div class="empty-state">
+                <div style="text-align: center; padding: 2rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🏢</div>
+                    <h3>No hay organizaciones registradas</h3>
+                    <p style="color: #6c757d; margin-bottom: 1rem;">
+                        Comience creando su primera organización comunitaria.
+                    </p>
+                    <button @click="showModal = true" class="btn" style="margin-top: 1rem;">
+                        + Crear Organización
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal para nueva organización -->
+    <div x-show="showModal" 
+         class="modal-overlay" 
+         @click.away="showModal = false"
+         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+        <div class="card modal-content" 
+             @click.stop 
+             style="max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3>Nueva Organización</h3>
+                <button @click="showModal = false" 
+                        style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            
+            <form hx-post="/organizaciones" 
+                  hx-target="#org-list" 
+                  hx-swap="outerHTML" 
+                  @submit="showModal = false">
+                <div class="form-group">
+                    <label for="nombre">Nombre *</label>
+                    <input type="text" 
+                           id="nombre" 
+                           name="nombre" 
+                           x-model="nuevaOrg.nombre" 
+                           required
+                           class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipo">Tipo *</label>
+                    <select id="tipo" 
+                            name="tipo" 
+                            x-model="nuevaOrg.tipo" 
+                            required
+                            class="form-control">
+                        <option value="cooperativa">Cooperativa</option>
+                        <option value="centro_cultural">Centro Cultural</option>
+                        <option value="huerta">Huerta Colectiva</option>
+                        <option value="asamblea">Asamblea Barrial</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="localidad">Localidad *</label>
+                    <input type="text" 
+                           id="localidad" 
+                           name="localidad" 
+                           x-model="nuevaOrg.localidad" 
+                           required
+                           class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" 
+                              name="descripcion" 
+                              x-model="nuevaOrg.descripcion"
+                              rows="4"
+                              class="form-control"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn">Crear Organización</button>
+                    <button type="button" 
+                            @click="showModal = false" 
+                            class="btn"
+                            style="background: #6c757d;">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+.table th,
+.table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.5em;
+    border-radius: 3px;
+    font-size: 0.85em;
+    text-transform: uppercase;
+}
+
+.badge.cooperativa { background: #d1ecf1; color: #0c5460; }
+.badge.centro_cultural { background: #fff3cd; color: #856404; }
+.badge.huerta { background: #d4edda; color: #155724; }
+.badge.asamblea { background: #e2e3e5; color: #383d41; }
+.badge.success { background: #d4edda; color: #155724; }
+.badge.secondary { background: #e2e3e5; color: #383d41; }
+
+.btn-action {
+    background: none;
+    border: none;
+    color: #495057;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.25rem;
+    border-radius: 3px;
+    transition: background 0.2s;
+}
+
+.btn-action:hover {
+    background: #e9ecef;
+    color: #264653;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.modal-overlay {
+    animation: fadeIn 0.2s;
+}
+
+.modal-content {
+    animation: slideUp 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0);
+    }
+}
+</style>
+
+<script>
+document.addEventListener('htmx:configRequest', function(evt) {
+    // Asegurar que los headers necesarios se envíen
+    evt.detail.headers['X-Requested-With'] = 'XMLHttpRequest';
+});
+
+// Cerrar modal con tecla Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.querySelector('[x-data]');
+        if (modal) {
+            modal.__x.$data.showModal = false;
+        }
+    }
+});
+</script>
+{% endblock %}
