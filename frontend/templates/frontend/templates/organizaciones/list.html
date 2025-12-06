@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div x-data="{ showModal: false, nuevaOrg: { nombre: '', tipo: 'cooperativa', localidad: '' } }">
+    <div class="card">
+        <h2>Organizaciones Comunitarias</h2>
+        
+        <button @click="showModal = true" class="btn">+ Nueva Organización</button>
+        
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Localidad</th>
+                        <th>Proyectos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for org in organizaciones %}
+                    <tr>
+                        <td><a href="/organizaciones/{{ org.slug }}">{{ org.nombre }}</a></td>
+                        <td>{{ org.tipo }}</td>
+                        <td>{{ org.localidad }}</td>
+                        <td>{{ org.proyectos_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para nueva organización -->
+    <div x-show="showModal" class="modal" @click.away="showModal = false">
+        <div class="card" @click.stop>
+            <h3>Nueva Organización</h3>
+            <form hx-post="/organizaciones" hx-target="#org-list" hx-swap="beforeend">
+                <div>
+                    <label>Nombre:</label>
+                    <input type="text" name="nombre" x-model="nuevaOrg.nombre" required>
+                </div>
+                <div>
+                    <label>Tipo:</label>
+                    <select name="tipo" x-model="nuevaOrg.tipo">
+                        <option value="cooperativa">Cooperativa</option>
+                        <option value="centro_cultural">Centro Cultural</option>
+                        <option value="huerta">Huerta Colectiva</option>
+                        <option value="asamblea">Asamblea Barrial</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Localidad:</label>
+                    <input type="text" name="localidad" x-model="nuevaOrg.localidad" required>
+                </div>
+                <button type="submit" class="btn">Crear</button>
+                <button type="button" @click="showModal = false" class="btn" style="background:#6c757d">Cancelar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.target.id === 'org-list') {
+            // Cerrar modal después de crear
+            document.querySelector('[x-data]').__x.$data.showModal = false;
+        }
+    });
+</script>
+{% endblock %}
