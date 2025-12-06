@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Pampeano Web{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>🌱 Bienvenido a Pampeano Web</h1>
+    <p>Plataforma para gestión comunitaria en La Pampa.</p>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">{{ include_file('static/icons/organizacion.svg') | safe }}</div>
+            <div class="stat-content">
+                <h3>{{ org_count }}</h3>
+                <p>Organizaciones</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">{{ include_file('static/icons/proyecto.svg') | safe }}</div>
+            <div class="stat-content">
+                <h3>{{ proyecto_count }}</h3>
+                <p>Proyectos activos</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="actions">
+        <a href="/organizaciones" class="btn">Ver organizaciones</a>
+        <a href="/proyectos" class="btn">Ver proyectos</a>
+    </div>
+    
+    <div class="offline-info">
+        <span id="online-status">Cargando...</span>
+        <small>• Esta aplicación funciona sin internet</small>
+    </div>
+</div>
+
+<style>
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.stat-icon {
+    margin-right: 1rem;
+    color: #264653;
+}
+
+.stat-content h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.5rem;
+}
+
+.actions {
+    margin: 1.5rem 0;
+}
+
+.offline-info {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+</style>
+{% endblock %}
