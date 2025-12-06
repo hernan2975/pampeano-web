@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Pampeano Web{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <script src="/static/js/htmx.min.js" defer></script>
+    <script src="/static/js/alpine.min.js" defer></script>
+</head>
+<body>
+    <header class="container">
+        <h1>🌾 Pampeano Web</h1>
+        <nav>
+            <a href="/" class="btn">Inicio</a>
+            <a href="/organizaciones" class="btn">Organizaciones</a>
+            <a href="/proyectos" class="btn">Proyectos</a>
+        </nav>
+    </header>
+    
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer class="container">
+        <p>Hecho en La Pampa, para La Pampa • Versión 1.0.0</p>
+    </footer>
+</body>
+</html>
