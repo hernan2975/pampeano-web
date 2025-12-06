@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  pampeano-web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: pampeano-web
+    ports:
+      - "8000:8000"
+    volumes:
+      - pampeano_data:/app/backend/data
+      - pampeano_logs:/app/logs
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017
+      - MONGODB_DB=pampeano
+      - USE_SQLITE_FALLBACK=false
+    restart: unless-stopped
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6
+    container_name: mongo-pampeano
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: pampeano-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - pampeano-web
+    restart: unless-stopped
+
+volumes:
+  pampeano_data:
+  pampeano_logs:
+  mongo_data:
