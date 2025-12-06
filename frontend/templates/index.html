@@ -5,29 +5,53 @@
 {% block content %}
 <div class="card">
     <h1>🌱 Bienvenido a Pampeano Web</h1>
-    <p>Plataforma para gestión comunitaria en La Pampa.</p>
+    <p class="lead">Plataforma para gestión comunitaria en La Pampa.</p>
     
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-icon">{{ include_file('static/icons/organizacion.svg') | safe }}</div>
+            <div class="stat-icon">
+                {{ include_file('static/icons/organizacion.svg') | safe }}
+            </div>
             <div class="stat-content">
-                <h3>{{ org_count }}</h3>
+                <h3>{{ org_count or 0 }}</h3>
                 <p>Organizaciones</p>
             </div>
         </div>
         
         <div class="stat-card">
-            <div class="stat-icon">{{ include_file('static/icons/proyecto.svg') | safe }}</div>
+            <div class="stat-icon">
+                {{ include_file('static/icons/proyecto.svg') | safe }}
+            </div>
             <div class="stat-content">
-                <h3>{{ proyecto_count }}</h3>
+                <h3>{{ proyecto_count or 0 }}</h3>
                 <p>Proyectos activos</p>
             </div>
         </div>
     </div>
     
-    <div class="actions">
-        <a href="/organizaciones" class="btn">Ver organizaciones</a>
-        <a href="/proyectos" class="btn">Ver proyectos</a>
+    <div class="quick-actions">
+        <h3>Acciones rápidas</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <a href="/organizaciones" class="action-card">
+                <div class="action-icon">
+                    {{ include_file('static/icons/organizacion.svg') | safe }}
+                </div>
+                <div>
+                    <h4>Organizaciones</h4>
+                    <p>Gestionar cooperativas, centros culturales y asambleas</p>
+                </div>
+            </a>
+            
+            <a href="/proyectos" class="action-card">
+                <div class="action-icon">
+                    {{ include_file('static/icons/proyecto.svg') | safe }}
+                </div>
+                <div>
+                    <h4>Proyectos</h4>
+                    <p>Registrar huertas, talleres y actividades colectivas</p>
+                </div>
+            </a>
+        </div>
     </div>
     
     <div class="offline-info">
@@ -37,6 +61,12 @@
 </div>
 
 <style>
+.lead {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    color: #495057;
+}
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -50,20 +80,59 @@
     padding: 1rem;
     background: #f8f9fa;
     border-radius: 6px;
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .stat-icon {
     margin-right: 1rem;
     color: #264653;
+    width: 24px;
+    height: 24px;
 }
 
 .stat-content h3 {
     margin: 0 0 0.25rem 0;
     font-size: 1.5rem;
+    color: #264653;
 }
 
-.actions {
-    margin: 1.5rem 0;
+.quick-actions {
+    margin: 2rem 0;
+}
+
+.action-card {
+    display: flex;
+    text-decoration: none;
+    color: inherit;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 1rem;
+    transition: all 0.2s;
+}
+
+.action-card:hover {
+    border-color: #264653;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.action-icon {
+    margin-right: 1rem;
+    color: #264653;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.action-card h4 {
+    margin: 0 0 0.5rem 0;
+    color: #264653;
 }
 
 .offline-info {
