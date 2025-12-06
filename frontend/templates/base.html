@@ -1,29 +1,58 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" 
+      :class="{ 'dark': darkMode }">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Pampeano Web{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/main.css">
-    <script src="/static/js/htmx.min.js" defer></script>
-    <script src="/static/js/alpine.min.js" defer></script>
+    <link rel="icon" href="/static/icons/organizacion.svg">
 </head>
 <body>
     <header class="container">
-        <h1>🌾 Pampeano Web</h1>
-        <nav>
-            <a href="/" class="btn">Inicio</a>
-            <a href="/organizaciones" class="btn">Organizaciones</a>
-            <a href="/proyectos" class="btn">Proyectos</a>
-        </nav>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0;">
+            <h1 style="margin: 0;">
+                <a href="/" style="text-decoration: none; color: inherit;">
+                    🌾 Pampeano Web
+                </a>
+            </h1>
+            
+            <nav>
+                <a href="/" class="btn {% if request.url.path == '/' %}btn-active{% endif %}">Inicio</a>
+                <a href="/organizaciones" class="btn {% if '/organizaciones' in request.url.path %}btn-active{% endif %}">Organizaciones</a>
+                <a href="/proyectos" class="btn {% if '/proyectos' in request.url.path %}btn-active{% endif %}">Proyectos</a>
+                
+                <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)" 
+                        class="btn" style="background: #6c757d; margin-left: 0.5rem;">
+                    {{ '☀️' if not dark_mode else '🌙' }}
+                </button>
+            </nav>
+        </div>
     </header>
     
-    <main class="container">
+    <main class="container" id="main-content">
         {% block content %}{% endblock %}
     </main>
     
     <footer class="container">
-        <p>Hecho en La Pampa, para La Pampa • Versión 1.0.0</p>
+        <p style="text-align: center; padding: 1rem 0; color: #6c757d; font-size: 0.9rem;">
+            Hecho en La Pampa, para La Pampa • 
+            <a href="https://github.com/colectivo-pampeano/pampeano-web" 
+               style="color: #264653;">v1.0.0</a>
+        </p>
     </footer>
+
+    <script src="/static/js/htmx.min.js"></script>
+    <script src="/static/js/alpine.min.js"></script>
+    <script src="/static/js/main.js"></script>
+    
+    {% block scripts %}{% endblock %}
 </body>
 </html>
+
+<style>
+.btn-active {
+    background: #1d3540 !important;
+    box-shadow: 0 2px 4px rgba(38, 70, 83, 0.3);
+}
+</style>
