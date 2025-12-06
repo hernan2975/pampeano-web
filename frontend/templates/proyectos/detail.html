@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}{{ proyecto.nombre }} - Pampeano Web{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2>📚 {{ proyecto.nombre }}</h2>
+        <a href="/proyectos" class="btn" style="background:#6c757d;">← Volver</a>
+    </div>
+    
+    <div class="project-info">
+        <p><strong>Organización:</strong> <a href="/organizaciones/{{ proyecto.organizacion_slug }}">{{ proyecto.organizacion_nombre }}</a></p>
+        <p><strong>Tipo:</strong> <span class="badge {{ proyecto.tipo }}">{{ proyecto.tipo }}</span></p>
+        <p><strong>Estado:</strong> <span class="badge {{ proyecto.estado }}">{{ proyecto.estado }}</span></p>
+        <p><strong>Creado:</strong> {{ proyecto.created_at.strftime('%d/%m/%Y') }}</p>
+    </div>
+    
+    {% if proyecto.descripcion %}
+    <div class="section">
+        <h3>Descripción</h3>
+        <p>{{ proyecto.descripcion }}</p>
+    </div>
+    {% endif %}
+    
+    <div class="section">
+        <h3>Participantes ({{ participantes | length }})</h3>
+        {% if participantes %}
+        <ul class="participant-list">
+            {% for p in participantes %}
+            <li>
+                <strong>{{ p.nombre }} {{ p.apellido }}</strong>
+                {% if p.rol != 'participante' %}
+                <span class="badge">{{ p.rol }}</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No hay participantes registrados.</p>
+        {% endif %}
+    </div>
+    
+    <div class="actions">
+        <a href="/proyectos/{{ proyecto.id }}/editar" class="btn">✏️ Editar</a>
+        <button class="btn" style="background:#dc3545;" 
+                data-confirm="¿Eliminar este proyecto?">
+            🗑️ Eliminar
+        </button>
+    </div>
+</div>
+
+<style>
+.project-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.project-info p {
+    margin: 0.5rem 0;
+}
+
+.section {
+    margin: 1.5rem 0;
+}
+
+.badge {
+    margin-left: 0.5rem;
+    padding: 0.25em 0.5em;
+    border-radius: 3px;
+    font-size: 0.85em;
+    background: #e9ecef;
+}
+
+.participant-list {
+    list-style: none;
+    padding: 0;
+}
+
+.participant-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+</style>
+{% endblock %}
