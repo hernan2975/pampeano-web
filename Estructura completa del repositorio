@@ -1,0 +1,67 @@
+pampeano-web/
+├── .gitignore
+├── LICENSE
+├── README.md
+├── requirements.txt
+├── pyproject.toml
+│
+├── backend/
+│   ├── main.py                # FastAPI app
+│   ├── config.py              # Configuración (MongoDB/SQLite)
+│   ├── models/                # Modelos Pydantic + MongoDB
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── organizacion.py
+│   │   ├── proyecto.py
+│   │   └── participante.py
+│   ├── database/
+│   │   ├── __init__.py
+│   │   ├── mongo.py
+│   │   └── sqlite_fallback.py
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   ├── organizaciones.py
+│   │   ├── proyectos.py
+│   │   └── api.py
+│   └── services/
+│       ├── __init__.py
+│       └── organizacion_service.py
+│
+├── frontend/
+│   ├── static/
+│   │   ├── css/
+│   │   │   ├── main.css
+│   │   │   └── htmx.min.css
+│   │   ├── js/
+│   │   │   ├── htmx.min.js
+│   │   │   ├── alpine.min.js
+│   │   │   └── main.js
+│   │   └── icons/
+│   │       └── *.svg
+│   └── templates/
+│       ├── base.html
+│       ├── index.html
+│       ├── login.html
+│       ├── organizaciones/
+│       │   ├── list.html
+│       │   ├── detail.html
+│       │   └── form.html
+│       └── proyectos/
+│           ├── list.html
+│           └── detail.html
+│
+├── scripts/
+│   ├── init_db.py            # Inicializa DB con datos de ejemplo
+│   └── backup_to_usb.sh      # Respaldo a USB (offline)
+│
+├── tests/
+│   ├── conftest.py
+│   ├── test_models.py
+│   └── test_routes.py
+│
+└── deploy/
+    ├── docker-compose.yml
+    ├── nginx.conf
+    └── systemd/
+        └── pampeano-web.service
