@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pampeano-web"
+version = "1.0.0"
+description = "Plataforma web para gestión comunitaria en La Pampa"
+authors = [{name = "Colectivo Autónomo Pampeano"}]
+license = {text = "MIT Community"}
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.29.0",
+    "motor>=3.3.0",
+    "pymongo>=4.6.0",
+    "python-dotenv>=1.0.0",
+    "jinja2>=3.1.0",
+    "python-slugify>=8.0.0",
+    "passlib[bcrypt]>=1.7.4",
+    "python-jose[cryptography]>=3.3.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/colectivo-pampeano/pampeano-web"
+Repository = "https://github.com/colectivo-pampeano/pampeano-web.git"
+
+[tool.setuptools.packages.find]
+where = ["backend"]
+include = ["backend*"]
+namespaces = false
